@@ -1,8 +1,13 @@
 %% -*- mode: erlang; erlang-indent-level: 4; indent-tabs-mode: nil -*-
 {application, getopt, [
     {description,   "Command-line options parser for Erlang"},
-    {vsn,           git},
+    {vsn,           "1.0.1"},
     {modules,       []},
     {registered,    []},
-    {applications,  [kernel, stdlib]}
+    {applications,  [kernel, stdlib]},
+    {maintainers,   ["Juan Jose Comellas"]},
+    {licenses,      ["BSD"]},
+    {links,         [
+        {"GitHub", "https://github.com/jcomellas/getopt"}
+    ]}
 ]}.
