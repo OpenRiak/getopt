@@ -298,6 +298,19 @@ check_test_() ->
       ?_assertEqual({error, {missing_required_option, arg}}, check(OptSpecList, Opts))},
      {"Parse arguments and check required options",
       ?_assertEqual({error, {missing_required_option, arg}}, parse_and_check(OptSpecList, ""))},
+    {"Parse arguments and check required option args",
+      ?_assertEqual({error, {missing_option_arg, arg}},
+                    parse_and_check(OptSpecList, "-a"))}].
+
+format_error_test_() ->
+    OptSpecList =
+        [
+         {   arg,        $a,     "arg",   string,   "Required arg"},
+         { short,        $s, undefined,   string,   "short option"},
+         {  long, undefined,    "long",   string,   "long option"},
+         { other, undefined, undefined,   string,   "task"}
+        ],
+    [
      {"Format missing option error test 1",
       ?_assertEqual("missing required option: -a (arg)",
                     format_error(OptSpecList, {error, {missing_required_option, arg}}))},
@@ -321,5 +334,35 @@ check_test_() ->
                     format_error(OptSpecList, {error, {invalid_option_arg, "arg_value"}}))},
      {"Format invalid option argument error test 2",
       ?_assertEqual("option 'verbose' has invalid argument: 100",
-                    format_error(OptSpecList, {error, {invalid_option_arg, {verbose, "100"}}}))}
+                    format_error(OptSpecList, {error, {invalid_option_arg, {verbose, "100"}}}))},
+     {"Format missing option argument error test 1",
+      ?_assertEqual("missing option argument: -a (arg) <arg>",
+                    format_error(OptSpecList, {error, {missing_option_arg, arg}}))},
+     {"Format missing option argument error test 2",
+      ?_assertEqual("missing option argument: -a (arg) <arg>",
+                    format_error(OptSpecList, {missing_option_arg, arg}))},
+     {"Format missing option argument error test 3",
+      ?_assertEqual("missing option argument: -s <short>",
+                    format_error(OptSpecList, {missing_option_arg, short}))},
+     {"Format missing option argument error test 4",
+      ?_assertEqual("missing option argument: --long <long>",
+                    format_error(OptSpecList, {missing_option_arg, long}))},
+     {"Format missing option argument error test 5",
+      ?_assertError(_, format_error(OptSpecList, {missing_option_arg, unknown}))}
     ].
+
+utf8_binary_test_() ->
+  OptSpecList = [{utf8, undefined, "utf8", utf8_binary, "UTF-8 arg"}],
+  Unicode = [228, 220, 223, 1455],
+  Utf8 = unicode:characters_to_binary(Unicode),
+  io:setopts(standard_error, [{encoding, utf8}]),
+  OptSpecsWithDefault = [{utf8, undefined, "utf8", {utf8_binary, Utf8}, "UTF-8 arg"}],
+  UsageBin = unicode:characters_to_binary(getopt:usage_options(OptSpecsWithDefault)),
+  [{"Empty utf8_binary argument",
+    ?_assertEqual({ok, {[{utf8, <<>>}], []}}, parse(OptSpecList, ["--utf8", ""]))},
+   {"Non empty utf8_binary argument",
+    ?_assertEqual({ok, {[{utf8, Utf8}], []}}, parse(OptSpecList, ["--utf8", Unicode]))},
+   {"Default utf8_binary argument",
+    ?_assertEqual({ok, {[{utf8, Utf8}], []}}, parse(OptSpecsWithDefault, []))},
+   {"Default utf8_binary argument usage",
+    ?_assertEqual(1, length(binary:matches(UsageBin, Utf8)))}].
