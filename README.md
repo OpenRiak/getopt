@@ -1,17 +1,22 @@
 Getopt for Erlang
 =================
 
+[![Build Status][badge]][status]
+
 Command-line parsing module that uses a syntax similar to that of GNU *getopt*.
 
+This is the [OpenRiak][] fork of the [original][upstream] project.
 
 Requirements
 ------------
 
-You should only need a somewhat recent version of Erlang/OTP. The module has
-been tested with all versions of Erlang starting with R13B and ending with 20.
+You should only need a somewhat recent version of [Erlang/OTP][otp].
+The project currently supports all versions of Erlang since OTP 21.
 
-You also need a recent version of [rebar3](http://www.rebar3.org/) in
-the system path.
+You also need a recent version of [rebar3][] in the system path.
+
+> _Compatibility with older Erlang releases may be available in the
+> [original][upstream] project._
 
 Installation
 ------------
@@ -22,14 +27,13 @@ To run the unit tests run `rebar3 eunit`.
 
 To build the (very) limited documentation run `rebar edoc`.
 
-To use getopt in your project you can just add it as a dependency in your
-`rebar.config` file in the following way:
+To use OpenRiak getopt in your project you can just add it as a dependency
+in your `rebar.config` file in the following way:
 ```erlang
-{deps,
- [
-  {getopt, "1.0.2"}
- ]
-}
+{deps, [
+    {getopt, {git, "https://github.com/OpenRiak/getopt.git",
+        {branch, "openriak-3.2"}}}
+]}
 ```
 
 
@@ -497,3 +501,12 @@ Will return:
 ```erlang
 {ok,{[{path,"/john's files"}],["dummy"]}}
 ```
+
+
+  [badge]:      https://github.com/OpenRiak/getopt/actions/workflows/erlang.yml/badge.svg
+  [status]:     https://github.com/OpenRiak/getopt/actions/workflows/erlang.yml
+  [openriak]:   https://github.com/OpenRiak/
+  [origin]:     https://github.com/OpenRiak/getopt/
+  [upstream]:   https://github.com/jcomellas/getopt/
+  [otp]:        https://www.erlang.org/
+  [rebar3]:     https://www.rebar3.org/

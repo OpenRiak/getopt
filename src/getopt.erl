@@ -144,8 +144,10 @@ parse(OptSpecList, OptAcc, ArgAcc, _ArgPos, []) ->
 
 
 %% @doc Format the error code returned by prior call to parse/2 or check/2.
--spec format_error([option_spec()], {error, {Reason :: atom(), Data :: term()}} |
-                   {Reason :: term(), Data :: term()}) -> string().
+-spec format_error([option_spec()], {error, {Reason, Data}} |
+                   {Reason, Data}) -> string() when
+      Reason :: term(),
+      Data :: term().
 format_error(OptSpecList, {error, Reason}) ->
     format_error(OptSpecList, Reason);
 format_error(OptSpecList, {missing_required_option, Name}) ->
@@ -451,7 +453,7 @@ to_type(integer, Arg) ->
 to_type(float, Arg) ->
     list_to_float(Arg);
 to_type(boolean, Arg) ->
-    LowerArg = lowercase(Arg),
+    LowerArg = string:lowercase(Arg),
     case is_arg_true(LowerArg) of
         true ->
             true;
@@ -509,7 +511,7 @@ is_implicit_arg(_Type, _Arg) ->
 
 -spec is_boolean_arg(string()) -> boolean().
 is_boolean_arg(Arg) ->
-    LowerArg = lowercase(Arg),
+    LowerArg = string:lowercase(Arg),
     is_arg_true(LowerArg) orelse is_arg_false(LowerArg).
 
 
@@ -628,7 +630,7 @@ usage_cmd_line(ProgramName, OptSpecList, CmdLineTail) ->
 %%      already wrapped according to the maximum MaxLineLength.
 -spec usage_cmd_line_options(MaxLineLength :: non_neg_integer(), [option_spec()], CmdLineTail :: string()) -> iolist().
 usage_cmd_line_options(MaxLineLength, OptSpecList, CmdLineTail) ->
-    usage_cmd_line_options(MaxLineLength, OptSpecList ++ lexemes(CmdLineTail, " "), [], 0, []).
+    usage_cmd_line_options(MaxLineLength, OptSpecList ++ string:lexemes(CmdLineTail, " "), [], 0, []).
 
 usage_cmd_line_options(MaxLineLength, [OptSpec | Tail], LineAcc, LineAccLength, Acc) ->
     Option = [$\s | lists:flatten(usage_cmd_line_option(OptSpec))],
@@ -945,14 +947,12 @@ to_string(Atom) when is_atom(Atom) ->
 to_string(Value) ->
     io_lib:format("~p", [Value]).
 
-%% OTP-20/21 conversion to unicode string module
--ifdef(unicode_str).
-lowercase(Str) -> string:lowercase(Str).
-lexemes(Str, Separators) -> string:lexemes(Str, Separators).
-cspan(Str, Chars) -> length(element(1,string:take(Str, Chars, true))).
--else.
-lowercase(Str) -> string:to_lower(Str).
-lexemes(Str, Separators) -> string:tokens(Str, Separators).
-cspan(Str, Chars) -> string:cspan(Str, Chars).
--endif.
 
+-spec cspan(
+    String :: unicode:chardata(), Chars :: list(string:grapheme_cluster()) )
+        -> Length :: non_neg_integer().
+%% Should be semantically equivalent to the obsolete string:cspan/2 function,
+%% but operating on all legal unicode:chardata() string types.
+cspan(String, Chars) ->
+    {Unmatched, _} = string:take(String, Chars, true),
+    string:length(Unmatched).

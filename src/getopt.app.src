@@ -1,9 +1,17 @@
-{application,getopt,
-             [{description,"Command-line options parser for Erlang"},
-              {vsn,"1.0.2"},
-              {modules,[]},
-              {registered,[]},
-              {maintainers,["Juan Jose Comellas"]},
-              {licenses,["BSD"]},
-              {links,[{"GitHub","https://github.com/jcomellas/getopt"}]},
-              {applications,[kernel,stdlib]}]}.
+%% -*- mode: erlang; erlang-indent-level: 4; indent-tabs-mode: nil -*-
+{application, getopt, [
+    {description,   "Command-line options parser for Erlang"},
+    {vsn,           "1.0.3.1"},
+    {modules,       []},
+    {registered,    []},
+    {applications,  [kernel, stdlib]},
+    {maintainers,   [
+        "The OpenRiak Project",
+        "Juan Jose Comellas"
+    ]},
+    {licenses,      ["BSD"]},
+    {links,         [
+        {"GitHub", "https://github.com/OpenRiak/getopt"},
+        {"GitHub", "https://github.com/jcomellas/getopt"}
+    ]}
+]}.
